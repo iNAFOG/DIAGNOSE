@@ -1,10 +1,10 @@
 import torch
 from torch.utils.data import DataLoader
-from backbone import BackboneModel
-from backbone_trainer import BackboneTrainer
-from teacher_trainer import TeacherTrainer
-from student_trainer import Student
-from fairness_metrics import evaluate_fairness, print_evaluation_results
+from models.backbone import BackboneModel
+from models.backbone_trainer import BackboneTrainer
+from models.teacher_trainer import TeacherTrainer
+from models.student_trainer import Student
+from utils.fairness_metrics import evaluate_fairness, print_evaluation_results
 from config import Config
 
 
@@ -76,7 +76,7 @@ def cache_teacher_logits(teachers, features, labels, groups, device='cuda', batc
     return teacher_logits
 
 
-def train_fairdi_complete(train_dataset, test_dataset,
+def train_DIAGNOSE_complete(train_dataset, test_dataset,
                          num_classes=2, device='cuda', backbone='vit_base_patch16_224', val_dataset=None):
     print("Preparing grouped datasets...")
     if hasattr(train_dataset, 'get_groups'):
@@ -209,27 +209,27 @@ def train_fairdi_complete(train_dataset, test_dataset,
                 dataset_name = Config.dataset_config.get('name', 'HAM10000')
                 try:
                     if dataset_name == 'OL3I':
-                        from ol3i import get_ol3i_transforms
+                        from dataloaders.ol3i import get_ol3i_transforms
                         print("Switching train_dataset to deterministic transforms (using ol3i.get_ol3i_transforms)...")
                         train_dataset.transform = get_ol3i_transforms(is_training=False)
                     elif dataset_name == 'FITZPATRICK':
-                        from fitzpatrick17k import get_fitzpatrick_transforms
+                        from dataloaders.fitzpatrick17k import get_fitzpatrick_transforms
                         print("Switching train_dataset to deterministic transforms (using ol3i.get_ol3i_transforms)...")
                         train_dataset.transform = get_fitzpatrick_transforms(is_training=False)
                     elif dataset_name == 'PAPILA':
-                        from papila import get_papila_transforms
+                        from dataloaders.papila import get_papila_transforms
                         print("Switching train_dataset to deterministic transforms (using ol3i.get_ol3i_transforms)...")
                         train_dataset.transform = get_papila_transforms(is_training=False)
                     elif dataset_name == 'OASIS':
-                        from oasis import get_oasis_transforms
+                        from dataloaders.oasis import get_oasis_transforms
                         print("Switching train_dataset to deterministic transforms (using ol3i.get_ol3i_transforms)...")
                         train_dataset.transform = get_oasis_transforms(is_training=False)
                     elif dataset_name == 'HARVARD_GF':
-                        from harvard_gf import get_harvard_transforms
+                        from dataloaders.harvard_gf import get_harvard_transforms
                         print("Switching train_dataset to deterministic transforms (using ol3i.get_ol3i_transforms)...")
                         train_dataset.transform = get_harvard_transforms(is_training=False)
                     else:
-                        from ham10000 import get_transforms
+                        from dataloaders.ham10000 import get_transforms
                         print("Switching train_dataset to deterministic transforms (using ham10000.get_transforms)...")
                         train_dataset.transform = get_transforms(is_training=False)
                 except ImportError:

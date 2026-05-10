@@ -24,96 +24,22 @@ class OASISDataset(Dataset):
     def __len__(self):
         return len(self.df)
 
-    # def __getitem__(self, idx):
-    #     row = self.df.iloc[idx]
-    #     filename = row['ID'] + '.nii' # Assuming filename is ID.nii
-    #     # The user said: "each file named as the corresponding ID column in the metadata"
-    #     # Usually OASIS files are .nii or .img/.hdr. I'll assume .nii based on prompt.
-        
-    #     nii_path = os.path.join(self.data_path, 'images', filename)
-        
-    #     try:
-    #         if nib is None:
-    #             raise ImportError("nibabel is not installed. Please install it to use OASIS dataset.")
-                
-    #         # Load NIfTI
-    #         img = nib.load(nii_path)
-    #         # Get data as float32 to avoid overflow during normalization
-    #         vol = img.get_fdata(dtype=np.float32) 
-            
-    #         # Shape is usually (H, W, D) or (H, W, D, 1)
-    #         if len(vol.shape) == 4:
-    #             vol = vol[:, :, :, 0]
-                
-    #         depth = vol.shape[2]
-    #         mid_idx = depth // 2
-            
-    #         # Get relative slice offset from dataframe
-    #         # We stored 'slice_offset' which is relative to center (e.g., -5, 0, +5)
-    #         offset = int(row['slice_offset'])
-            
-    #         # Calculate actual slice index
-    #         slice_idx = mid_idx + offset
-            
-    #         # Clip to valid range just in case
-    #         slice_idx = max(0, min(slice_idx, depth - 1))
-            
-    #         # Extract slice
-    #         # Orientation can vary. Usually axial is the 3rd dim.
-    #         img_2d = vol[:, :, slice_idx]
-            
-    #         # Normalize
-    #         # MRI values are arbitrary intensities. 
-    #         # Standard practice: Normalize per volume or per slice?
-    #         # Usually per volume is better to preserve relative contrast, 
-    #         # but here we only have one slice loaded.
-    #         # Let's do robust min-max (1st-99th percentile) to handle outliers/noise
-    #         p1 = np.percentile(img_2d, 1)
-    #         p99 = np.percentile(img_2d, 99)
-            
-    #         # Clip and scale
-    #         img_2d = np.clip(img_2d, p1, p99)
-    #         if (p99 - p1) > 1e-6:
-    #             img_2d = (img_2d - p1) / (p99 - p1) * 255
-    #         else:
-    #             img_2d = np.zeros_like(img_2d)
-                
-    #         img_2d = img_2d.astype(np.uint8)
-            
-    #         # Convert to PIL
-    #         image = Image.fromarray(img_2d, mode='L').convert('RGB')
-
-    #     except Exception as e:
-    #         print(f"Error loading {nii_path}: {e}")
-    #         # Return a black image in case of error to not crash training? 
-    #         # Or raise. Raising is better to debug.
-    #         raise e
-
-    #     if self.transform:
-    #         image = self.transform(image)
-        
-    #     label = torch.tensor(int(row['binaryLabel']), dtype=torch.long)
-    #     group = torch.tensor(int(row[self.sensitive_attr]), dtype=torch.long)
-        
-    #     return {'image': image, 'label': label, 'group': group}
     def __getitem__(self, idx):
         row = self.df.iloc[idx]
         
         # Define the directory where images are stored
         img_dir = os.path.join(self.data_path, 'images')
         
-        # --- CHANGE START ---
-        # Search for a file that STARTS with the ID and ends with .nii
-        # pattern example: /data/images/OASIS_ID_123_processed.nii
+        # Search for a file that starts with the ID and ends with .nii.
+        # Example: /data/images/OASIS_ID_123_processed.nii
         search_pattern = os.path.join(img_dir, f"{row['ID']}*.nii")
         matches = glob.glob(search_pattern)
         
         if not matches:
             raise FileNotFoundError(f"No .nii file found starting with {row['ID']} in {img_dir}")
             
-        # We take the first match found (assuming 1 file per ID)
+        # Take the first match (assumes one file per ID).
         nii_path = matches[0] 
-        # --- CHANGE END ---
         
         try:
             if nib is None:

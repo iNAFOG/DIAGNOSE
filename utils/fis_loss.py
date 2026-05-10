@@ -5,12 +5,7 @@ from config import Config
 
 class FISLoss(nn.Module):
     """
-    Fair Identity Scaling (FIS) Loss
-    
-    Based on:
-    - FairVision: Equitable Deep Learning for Eye Disease Screening (arXiv:2310.02492)
-    - Fair Distillation: Teaching Fairness from Biased Teachers (arXiv:2411.11939)
-    
+    Fair Identity Scaling (FIS) Loss :    
     Combines individual-level and group-level scaling to improve fairness:
     - Individual Scaling: Prioritizes hard samples using softmax over losses
     - Group Scaling: Prioritizes underrepresented groups using Optimal Transport distances

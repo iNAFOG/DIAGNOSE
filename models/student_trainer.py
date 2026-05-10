@@ -7,9 +7,9 @@ from config import Config
 from torch.utils.data import DataLoader, TensorDataset
 from sklearn.metrics import roc_auc_score
 from tqdm import tqdm
-from fis_loss import FISLoss
+from utils.fis_loss import FISLoss
 import numpy as np
-from cutmix_util import cutmix_data
+from utils.cutmix_util import cutmix_data
 
 class Student(nn.Module):
     def __init__(self, backbone, config=False):
@@ -140,7 +140,7 @@ class Student(nn.Module):
         patience_counter = 0
         best_model_state = None
         
-        # Debug: Check validation setup
+        # Validation setup diagnostics
         if val_loader is None:
             print("⚠️  WARNING: val_loader is None - validation disabled!")
         if groups is None:

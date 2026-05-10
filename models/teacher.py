@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from backbone import BackboneModel
+from models.backbone import BackboneModel
 from config import Config
 
 class TeacherModel(nn.Module):

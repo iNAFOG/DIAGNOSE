@@ -37,9 +37,7 @@ class OL3IDataset(Dataset):
             # Dataset is named with the hash
             if anon_id in self.h5_file:
                 image_data = self.h5_file[anon_id][:]
-                # Assuming image is 512x512, might be grayscale or RGB?
-                # CT slices are usually grayscale (1 channel) or stored as numpy arrays.
-                # If it's a numpy array, we need to convert to PIL Image for transforms.
+                # CT slices are typically grayscale; convert to PIL for transforms.
                 
                 # Check dimensions
                 if len(image_data.shape) == 2:
@@ -50,10 +48,8 @@ class OL3IDataset(Dataset):
                 else:
                     raise ValueError(f"Unexpected image shape: {image_data.shape}")
             else:
-                # Fallback or error
                 print(f"Warning: ID {anon_id} not found in HDF5")
-                # Return a black image or raise error?
-                # For now, raise error to be safe
+                # Raise to surface missing data early.
                 raise FileNotFoundError(f"ID {anon_id} not found in {self.h5_path}")
 
         except Exception as e:
@@ -70,7 +66,7 @@ class OL3IDataset(Dataset):
 
     def get_groups(self):
         """
-        Extract groups for FairDI training.
+        Extract groups for DIAGNOSE training.
         Returns a dictionary {group_id: [indices]}
         """
         groups = {}

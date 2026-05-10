@@ -3,10 +3,10 @@ import numpy as np
 import torch
 import os
 import pickle
-from run_full_pipeline import train_fairdi_complete
+from run_full_pipeline import train_DIAGNOSE_complete
 from config import Config
 
-# Disable warnings and multiprocessing
+# Suppress noisy warnings and tokenizer parallelism warnings.
 import warnings
 warnings.filterwarnings('ignore')
 os.environ['HF_HUB_DISABLE_SYMLINKS_WARNING'] = '1'
@@ -91,36 +91,36 @@ def get_datasets(dataset_name, data_path):
     Factory function to get datasets based on name.
     """
     if dataset_name == 'HAM10000':
-        from ham10000 import prepare_ham_data
+        from dataloaders.ham10000 import prepare_ham_data
         print("Loading HAM10000 dataset...")
         # HAM10000 module handles all preprocessing and splitting internally
         return prepare_ham_data(data_path)
     elif dataset_name == 'OL3I':
-        from ol3i import prepare_ol3i_data
+        from dataloaders.ol3i import prepare_ol3i_data
         print("Loading OL3I dataset...")
         if prepare_ol3i_data is None:
              raise ImportError("OL3I module not found.")
         return prepare_ol3i_data(data_path)
     elif dataset_name == 'FITZPATRICK17K':
-        from fitzpatrick17k import prepare_fitzpatrick_data
+        from dataloaders.fitzpatrick17k import prepare_fitzpatrick_data
         print("Loading FITZPATRICK17K dataset...")
         if prepare_fitzpatrick_data is None:
              raise ImportError("FITZPATRICK17K module not found.")
         return prepare_fitzpatrick_data(data_path)
     elif dataset_name == 'PAPILA':
-        from papila import prepare_papila_data
+        from dataloaders.papila import prepare_papila_data
         print("Loading PAPILA dataset...")
         if prepare_papila_data is None:
              raise ImportError("PAPILA module not found.")
         return prepare_papila_data(data_path)
     elif dataset_name == 'HARVARD_GF':
-        from harvard_gf import prepare_harvard_data
+        from dataloaders.harvard_gf import prepare_harvard_data
         print("Loading HARVARD_GF dataset...")
         if prepare_harvard_data is None:
              raise ImportError("HARVARD_GF module not found.")
         return prepare_harvard_data(data_path)
     elif dataset_name == 'OASIS':
-        from oasis import prepare_oasis_data
+        from dataloaders.oasis import prepare_oasis_data
         print("Loading OASIS dataset...")
         if prepare_oasis_data is None:
              raise ImportError("OASIS module not found.")
@@ -168,8 +168,8 @@ def main():
     
     backbone = Config.backbone_model['name']
 
-    print("Starting FairDI pipeline...")
-    teachers, student, results = train_fairdi_complete(
+    print("Starting DIAGNOSE pipeline...")
+    teachers, student, results = train_DIAGNOSE_complete(
         train_dataset=train_dataset,
         test_dataset=test_dataset,
         num_classes=Config.dataset_config.get('num_classes', 2),

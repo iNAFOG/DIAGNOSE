@@ -33,7 +33,7 @@ class HarvardGFDataset(Dataset):
         
         npz_path = os.path.join(self.data_path, 'images', split_folder, filename)
         
-        # Debugging: Check if file exists, if not try to find it
+        # If the expected file is missing, attempt a case-insensitive folder match.
         if not os.path.exists(npz_path):
             # Try case-insensitive search for folder
             parent_dir = os.path.join(self.data_path, 'images')
@@ -79,7 +79,7 @@ class HarvardGFDataset(Dataset):
 
         except Exception as e:
             print(f"Error loading {npz_path}: {e}")
-            # Print directory listing to help debug
+            # Print a short directory listing to aid troubleshooting.
             dir_to_check = os.path.dirname(npz_path)
             if os.path.exists(dir_to_check):
                 print(f"Contents of {dir_to_check} (first 5): {os.listdir(dir_to_check)[:5]}")
@@ -97,7 +97,7 @@ class HarvardGFDataset(Dataset):
 
     def get_groups(self):
         """
-        Extract groups for FairDI training.
+        Extract groups for DIAGNOSE training.
         Returns a dictionary {group_id: [indices]}
         """
         groups = {}

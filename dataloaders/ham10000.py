@@ -39,7 +39,7 @@ class HAM10000Dataset(Dataset):
 
     def get_groups(self):
         """
-        Extract groups for FairDI training.
+        Extract groups for DIAGNOSE training.
         Returns a dictionary {group_id: [indices]}
         """
         groups = {}

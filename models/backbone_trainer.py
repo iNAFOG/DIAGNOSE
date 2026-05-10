@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.cuda.amp import autocast, GradScaler
 from config import Config
-from fis_loss import FISLoss
+from utils.fis_loss import FISLoss
 
 from tqdm import tqdm
 from sklearn.metrics import roc_auc_score
@@ -12,18 +12,6 @@ import numpy as np
 
 
 class BackboneTrainer:
-    # def _set_trainable_layers(self, model):
-    #     # Unfreeze last two transformer encoder layers
-    #     for name, param in model.backbone.named_parameters():
-    #         if 'encoder.layer.10' in name or 'encoder.layer.11' in name:
-    #             param.requires_grad = True
-    #         else:
-    #             param.requires_grad = False
-
-    #     # Always unfreeze classifier head
-    #     for p in model.classifier.parameters():
-    #         p.requires_grad = True
-
     def _set_trainable_layers(self, model):
         if model.backbone_type == 'efficientnet_v2_s':
             # Unfreeze last 2 blocks for EfficientNet V2
@@ -153,7 +141,7 @@ class BackboneTrainer:
         use_cutmix = Config.cutmix_params['use_cutmix'] #True or False
         cutmix_prob = Config.cutmix_params['cutmix_prob']
         if use_cutmix:
-            from cutmix_util import cutmix_data
+            from utils.cutmix_util import cutmix_data
             print(f"Using CutMix with probability: {cutmix_prob}")
 
         for epoch in range(num_epochs):

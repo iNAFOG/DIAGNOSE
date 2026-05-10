@@ -22,8 +22,7 @@ class PAPILADataset(Dataset):
         row = self.df.iloc[idx]
         # Filename format: RET<PatientID><Eye>.jpg
         # PatientID should be 3 digits, e.g. 002
-        # Assuming 'ID' column exists and is integer
-        # Handle IDs like '#232'
+        # Handle IDs like '#232' and coerce to integer.
         pat_id = int(str(row['ID']).replace('#', ''))
         eye = row['Eye'] # 'OD' or 'OS'
         
@@ -32,7 +31,7 @@ class PAPILADataset(Dataset):
         # Images are stored in 'images' folder at data_path
         img_path = os.path.join(self.data_path, 'images', img_filename)
         
-        # Fallback to root if not in images
+        # Fall back to the root folder if not in images/.
         if not os.path.exists(img_path):
              img_path = os.path.join(self.data_path, img_filename)
 
@@ -52,7 +51,7 @@ class PAPILADataset(Dataset):
 
     def get_groups(self):
         """
-        Extract groups for FairDI training.
+        Extract groups for DIAGNOSE training.
         Returns a dictionary {group_id: [indices]}
         """
         groups = {}
@@ -144,14 +143,12 @@ def prepare_papila_data(data_path):
     
     # 2. Sensitive Attributes
     # Sex_binary
-    # Check for Gender or Sex
+    # Prefer a Gender/Sex column if present.
     if 'Gender' in df.columns:
-        # Assuming Male/Female strings. Need to verify mapping.
-        # Common: Male=1, Female=0 or vice versa.
-        # Let's check unique values
+        # Expecting pre-encoded values or strings that already map to 0/1.
         uniques = df['Gender'].unique()
         print(f"Gender values: {uniques}")
-        # Map Male to 1, Female to 0 (Consistent with HAM10000)
+        # Leave as-is to preserve dataset encoding.
         df['Sex_binary'] = df['Gender']
     else:
         print("Warning: Gender/Sex column not found. Creating dummy Sex_binary.")

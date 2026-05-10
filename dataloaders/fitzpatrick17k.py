@@ -20,18 +20,17 @@ class Fitzpatrick17kDataset(Dataset):
 
     def __getitem__(self, idx):
         row = self.df.iloc[idx]
-        # Image filename is md5hash.jpg
+        # Image filename is md5hash.jpg.
         img_filename = f"{row['md5hash']}.jpg"
         
-        # Images are stored in 'images' folder at data_path
+        # Images are stored in the images subfolder under data_path.
         img_path = os.path.join(self.data_path, 'images', img_filename)
 
         try:
             image = Image.open(img_path).convert('RGB')
         except (FileNotFoundError, OSError) as e:
             print(f"Error loading image: {img_path}")
-            # Return a black image to avoid crashing? Or raise?
-            # Raising is better to know something is wrong.
+            # Raise to surface missing/corrupt files early.
             raise e
 
         if self.transform:
@@ -44,7 +43,7 @@ class Fitzpatrick17kDataset(Dataset):
 
     def get_groups(self):
         """
-        Extract groups for FairDI training.
+        Extract groups for DIAGNOSE training.
         Returns a dictionary {group_id: [indices]}
         """
         groups = {}

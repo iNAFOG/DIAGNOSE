@@ -1,5 +1,5 @@
 import torch
-from teacher import TeacherModel
+from models.teacher import TeacherModel
 from torch.utils.data import DataLoader
 import torch.optim as optim
 import torch.nn as nn
@@ -8,7 +8,7 @@ from config import Config
 from tqdm import tqdm
 from sklearn.metrics import roc_auc_score
 import torch.nn.functional as F
-from cutmix_util import cutmix_data
+from utils.cutmix_util import cutmix_data
 
 class TeacherTrainer:
     def __init__(self):
