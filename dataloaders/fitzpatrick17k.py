@@ -146,9 +146,26 @@ def prepare_fitzpatrick_data(data_path):
     
     # Split Data
     # 80% Train, 10% Val, 10% Test
-    train_df, temp_df = train_test_split(df, test_size=0.2, stratify=df['binaryLabel'], random_state=42)
-    val_df, test_df = train_test_split(temp_df, test_size=0.5, stratify=temp_df['binaryLabel'], random_state=42)
-    
+    df['stratify_key'] = df['binaryLabel'].astype(str) + "_" + df['Skin_type_binary'].astype(str)
+
+    train_df, temp_df = train_test_split(
+        df,
+        test_size=0.2,
+        stratify=df['stratify_key'],
+        random_state=63
+    )
+
+    val_df, test_df = train_test_split(
+        temp_df,
+        test_size=0.5,
+        stratify=temp_df['stratify_key'],
+        random_state=63
+    )
+
+    train_df = train_df.drop(columns=['stratify_key'])
+    val_df = val_df.drop(columns=['stratify_key'])
+    test_df = test_df.drop(columns=['stratify_key'])
+
     print(f"Train: {len(train_df)}, Val: {len(val_df)}, Test: {len(test_df)}")
     
     # Create Datasets
